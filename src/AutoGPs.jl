@@ -20,8 +20,8 @@ Fit `object` to `data`. Returns another instance of `typeof(object)` with optimi
 parameters. For possible keyword arguments see `optimize`. Supported object types:
 - `AutoGPs.NoisyGP`
 """
-function fit(something, data; kwargs...)
-    model, θ0 = parameterize(something)
+function fit(object, data; kwargs...)
+    model, θ0 = parameterize(object)
     θ = optimize(model, θ0, data; kwargs...)
     return model(θ)
 end
@@ -48,7 +48,7 @@ Turn `object` into a callable parameterized version of itself and a parameter `�
 After assigning `model, θ = parameterize(object)`, calling `model(θ)` will yield the same
 `object` back. 
 """
-parameterize(thing) = Parameterized(thing), extract_parameters(thing)
+parameterize(object) = Parameterized(object), extract_parameters(object)
 
 """
     optimize(model, θ0, data; kwargs...) -> θ_opt
