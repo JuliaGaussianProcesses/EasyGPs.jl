@@ -14,10 +14,11 @@ export with_gaussian_noise
 export SVA, SVGP
 
 """
-    fit(something, data; kwargs...)
+    fit(object, data; kwargs...)
 
-Fit `something` to `data`. Returns another instance of `typeof(something)` with optimized
-parameters. For possible keyword arguments see `optimize`.
+Fit `object` to `data`. Returns another instance of `typeof(object)` with optimized
+parameters. For possible keyword arguments see `optimize`. Supported object types:
+- `AutoGPs.NoisyGP`
 """
 function fit(something, data; kwargs...)
     model, θ0 = parameterize(something)
@@ -26,9 +27,9 @@ function fit(something, data; kwargs...)
 end
 
 """
-    fit(something, x, y; kwargs...)
+    fit(object, x, y; kwargs...)
 
-A shorthand for `fit(something, (; x, y); kwargs...)` for when the only data is `x` and `y`.
+A shorthand for `fit(object, (; x, y); kwargs...)` for when the only data is `x` and `y`.
 """
 fit(gp, x, y; kwargs...) = fit(gp, (; x, y); kwargs...)
 
@@ -41,11 +42,11 @@ function (p::Parameterized)(θ)
 end
 
 """
-    parameterize(something) -> model, θ
+    parameterize(object) -> model, θ
 
-Turn `something` into a callable parameterized version of something and a parameter `θ`.
-After assigning `model, θ = parameterize(something)`, calling `model(θ)` will yield the same
-`something` back. 
+Turn `object` into a callable parameterized version of itself and a parameter `θ`.
+After assigning `model, θ = parameterize(object)`, calling `model(θ)` will yield the same
+`object` back. 
 """
 parameterize(thing) = Parameterized(thing), extract_parameters(thing)
 
@@ -68,9 +69,10 @@ function optimize(model, θ0, data; kwargs...)
 end
 
 """
-    _isequal(something, something_else)
+    _isequal(object1, object2)
 
-Check whether two things are equal for the purposes of this library.
+Check whether two things are equal for the purposes of this library. For this to be true,
+roughly speaking the objects must be of the same type and have the same parameters.
 """
 _isequal(::T1, ::T2) where {T1, T2} = false
 
@@ -89,16 +91,16 @@ _isequal(m1::ConstMean, m2::ConstMean) = isapprox(m1.c, m2.c)
 
 # Simple kernels
 extract_parameters(::SEKernel) = nothing
-apply_parameters(m::SEKernel, θ) = m
-_isequal(::SEKernel, ::SEKernel) = true
+apply_parameters(k::SEKernel, θ) = k
+_isequal(k1::T, k2::T) where T <: SEKernel = true
 
 extract_parameters(::Matern32Kernel) = nothing
-apply_parameters(m::Matern32Kernel, θ) = m
-_isequal(::Matern32Kernel, ::Matern32Kernel) = true
+apply_parameters(k::Matern32Kernel, θ) = k
+_isequal(k1::T, k2::T) where T <: Matern32Kernel = true
 
 extract_parameters(::Matern52Kernel) = nothing
-apply_parameters(m::Matern52Kernel, θ) = m
-_isequal(::Matern52Kernel, ::Matern52Kernel) = true
+apply_parameters(k::Matern52Kernel, θ) = k
+_isequal(k1::T, k2::T) where T <: Matern52Kernel = true
 
 
 
@@ -153,6 +155,7 @@ _isequal(t1::ScaleTransform, t2::ScaleTransform) = isapprox(t1.s, t2.s)
 # Likelihoods
 extract_parameters(::BernoulliLikelihood) = nothing
 apply_parameters(l::BernoulliLikelihood, θ) = l
+_isequal(l1::T, l2::T) where T <: BernoulliLikelihood = true
 
 
 
