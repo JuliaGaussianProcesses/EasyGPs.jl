@@ -1,4 +1,5 @@
 using AutoGPs
+import ParameterHandling
 using Test
 
 @testset "AutoGPs" begin
@@ -20,11 +21,16 @@ end
         with_lengthscale(SEKernel(), 2.),
         2. * SEKernel(), 3. * SEKernel() + 2. * Matern32Kernel(),
         2. * Matern32Kernel() * SEKernel(),
+        2. * with_lengthscale(SEKernel(), 1.) + 3. * Matern32Kernel() * Matern52Kernel(),
         BernoulliLikelihood()
     )
         model, θ = AutoGPs.parameterize(object)
         new_object = @inferred model(θ)
         @test AutoGPs._isequal(model(θ), object)
+
+        # Type stability in combination with ParameterHandling
+        par, unflatten = ParameterHandling.flatten(θ)
+        @test (@inferred unflatten(par)) == θ
     end
 end
 
