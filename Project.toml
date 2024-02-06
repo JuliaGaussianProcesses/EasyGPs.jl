@@ -11,8 +11,12 @@ Enzyme = "7da242da-08ed-463a-9acd-ee780be4f1d9"
 GPLikelihoods = "6031954c-0455-49d7-b3b9-3e1c99afaf40"
 KernelFunctions = "ec8451be-7e33-11e9-00cf-bbf324bd1392"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
+OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
 ParameterHandling = "2412ca09-6db7-441c-8e3a-88d5709968c5"
+Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 TemporalGPs = "e155a3c4-0841-43e1-8b83-a0e4f03cc18f"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
 AbstractGPs = "0.5.17"
