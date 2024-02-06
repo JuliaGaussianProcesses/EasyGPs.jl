@@ -12,7 +12,8 @@ let AutoGPs.jl handle the rest. The entry point for this is `AutoGPs.fit` (not e
 ```julia
 using AutoGPs
 
-gp = GP(0.0, 1.0 * with_lengthscale(SEKernel(), 1.0))
+kernel = 1.0 * with_lengthscale(SEKernel(), 1.0)
+gp = with_gaussian_noise(GP(0.0, kernel), 0.1)
 x = 0:0.1:10
 y = sin.(x) .+ 0.1 .* randn(length(x))
 fitted_gp = AutoGPs.fit(gp, x, y)
