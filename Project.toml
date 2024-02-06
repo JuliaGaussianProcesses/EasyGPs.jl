@@ -15,7 +15,6 @@ Optimization = "7f7a1694-90dd-40f0-9382-eb1efda571ba"
 OptimizationOptimJL = "36348300-93cb-4f02-beb5-3c3902f8871e"
 ParameterHandling = "2412ca09-6db7-441c-8e3a-88d5709968c5"
 Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
-TemporalGPs = "e155a3c4-0841-43e1-8b83-a0e4f03cc18f"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
@@ -26,4 +25,3 @@ Enzyme = "0.11.14"
 GPLikelihoods = "0.4.6"
 KernelFunctions = "0.10.60"
 ParameterHandling = "0.4.6"
-TemporalGPs = "0.6.4"
