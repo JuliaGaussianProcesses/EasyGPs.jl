@@ -4,6 +4,9 @@ AutoGPs is a front-end package for the JuliaGP ecosystem. It is geared towards m
 very easy to train GP models with a high-level API that does not require in-depth knowledge
 of the low-level algorithmic choices.
 
+NOTE: there is a similarly named, registered package AutoGP.jl, which has a very different
+scope. This package will be renamed before being registered.
+
 ## Usage
 
 In order to fit a GP, define one according to the familiar AbstractGP.jl interface and
