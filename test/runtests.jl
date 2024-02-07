@@ -35,12 +35,21 @@ end
 end
 
 @testset "Integration tests" begin
+    @testset "GP without noise" begin
+        kernel = 2. * with_lengthscale(SEKernel(), 1.) + 3. * Matern32Kernel() * Matern52Kernel()
+        gp = GP(3., kernel)
+        x = 0.01:0.01:1.
+        y = rand(gp(x, 0.1))
+        fitted_gp = AutoGPs.fit(gp, x, y; iterations = 1)
+        @test fitted_gp isa typeof(gp)
+        @test !AutoGPs._isequal(fitted_gp, gp)
+    end
     @testset "GP with Gaussian noise" begin
         kernel = 2. * with_lengthscale(SEKernel(), 1.) + 3. * Matern32Kernel() * Matern52Kernel()
         gp = with_gaussian_noise(GP(3., kernel), 0.1)
         x = 0.01:0.01:1.
         y = rand(gp.gp(x, 0.1))
-        fitted_gp = AutoGPs.fit(gp, x, y)
+        fitted_gp = AutoGPs.fit(gp, x, y; iterations = 1)
         @test fitted_gp isa typeof(gp)
         @test !AutoGPs._isequal(fitted_gp, gp)
     end

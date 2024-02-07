@@ -162,6 +162,7 @@ _isequal(l1::T, l2::T) where T <: BernoulliLikelihood = true
 # GPs
 extract_parameters(f::GP) = (extract_parameters(f.mean), extract_parameters(f.kernel))
 apply_parameters(f::GP, θ) = GP(apply_parameters(f.mean, θ[1]), apply_parameters(f.kernel, θ[2]))
+costfunction(f::GP, data) = -logpdf(f(data.x, 1e-6), data.y)
 _isequal(f1::GP, f2::GP) = _isequal(f1.mean, f2.mean) && _isequal(f1.kernel, f2.kernel)
 
 extract_parameters(f::LatentGP) = (extract_parameters(f.f), extract_parameters(f.lik))
