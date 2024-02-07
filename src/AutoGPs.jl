@@ -224,26 +224,4 @@ end
 
 costfunction(svgp::SVGP, data) = -elbo(svgp.lgp(data.x), svgp.sva, data.y)
 
-
-
-# Monkey patches until #67 and #68 in ParameterHandling.jl are merged
-ParameterHandling.value(::Nothing) = nothing
-
-function ParameterHandling.flatten(::Type{T}, x::Tuple) where {T<:Real}
-    vec1, back1 = ParameterHandling.flatten(T, first(x))
-    vec2, back2 = ParameterHandling.flatten(T, Base.tail(x))
-    l1 = length(vec1)
-    l2 = length(vec2)
-    function unflatten_to_Tuple(v::Vector{T})
-        return (back1(v[1:l1]), back2(v[(l1 + 1):(l1 + l2)])...)
-    end
-    return vcat(vec1, vec2), unflatten_to_Tuple
-end
-
-function ParameterHandling.flatten(::Type{T}, x::Tuple{}) where {T<:Real}
-    v = T[]
-    unflatten_to_empty_Tuple(::Vector{T}) = x
-    return v, unflatten_to_empty_Tuple
-end
-
 end # module AutoGPs
