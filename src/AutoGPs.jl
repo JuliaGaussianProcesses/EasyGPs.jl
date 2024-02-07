@@ -196,7 +196,7 @@ with_gaussian_noise(gp::GP, obs_noise::Real) = NoisyGP(gp, obs_noise)
 
 extract_parameters(f::NoisyGP) = (extract_parameters(f.gp), ParameterHandling.positive(f.obs_noise))
 apply_parameters(f::NoisyGP, θ) = NoisyGP(apply_parameters(f.gp, θ[1]), θ[2])
-costfunction(f::NoisyGP, data) = -logpdf(f.gp(data.x, f.obs_noise), data.y)
+costfunction(f::NoisyGP, data) = -logpdf(f.gp(data.x, f.obs_noise + 1e-6), data.y)
 _isequal(f1::NoisyGP, f2::NoisyGP) = _isequal(f1.gp, f2.gp) && isapprox(f1.obs_noise, f2.obs_noise)
 
 struct SVGP{T <: LatentGP, Ts <: SVA}
