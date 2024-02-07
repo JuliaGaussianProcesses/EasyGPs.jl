@@ -1,5 +1,8 @@
 # AutoGPs
 
+[![CI](https://github.com/JuliaGaussianProcesses/AutoGPs.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaGaussianProcesses/AutoGPs.jl/actions/workflows/CI.yml)
+[![Codecov](https://codecov.io/gh/JuliaGaussianProcesses/AutoGPs.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGaussianProcesses/AutoGPs.jl)
+
 AutoGPs is a front-end package for the JuliaGP ecosystem. It is geared towards making it
 very easy to train GP models with a high-level API that does not require in-depth knowledge
 of the low-level algorithmic choices.
