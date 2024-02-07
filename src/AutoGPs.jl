@@ -57,14 +57,14 @@ Takes a callable `model` and returns the optimal parameter, starting with initia
 `θ0`. In order to work, there needs to be an implementation of `AutoGPs.costfunction` taking
 two arguments, the first of which is of type `typeof(model(θ0))`.
 """
-function optimize(model, θ0, data; kwargs...)
+function optimize(model, θ0, data; iterations = 1000, kwargs...)
     par0, unflatten = ParameterHandling.flatten(θ0)
     optf = Optimization.OptimizationFunction(
         (par, data) -> costfunction(model(unflatten(par)), data),
         Optimization.AutoZygote()
     )
     prob = Optimization.OptimizationProblem(optf, par0, data)
-    sol = Optimization.solve(prob, OptimizationOptimJL.BFGS(); maxiters = 1000)
+    sol = Optimization.solve(prob, OptimizationOptimJL.BFGS(); maxiters = iterations)
     return unflatten(sol.u)
 end
 
