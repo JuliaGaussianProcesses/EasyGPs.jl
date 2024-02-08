@@ -223,6 +223,6 @@ function apply_parameters(f::SVGP, θ)
     )
 end
 
-costfunction(svgp::SVGP, data) = -elbo(svgp.lgp(data.x), svgp.sva, data.y)
+costfunction(svgp::SVGP, data) = -elbo(svgp.sva, svgp.lgp(data.x), data.y)
 
 end # module AutoGPs
