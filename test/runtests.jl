@@ -1,4 +1,5 @@
 using AutoGPs
+using Distributions
 import ParameterHandling
 using Test
 
@@ -52,6 +53,19 @@ end
         fitted_gp = AutoGPs.fit(gp, x, y; iterations = 1)
         @test fitted_gp isa typeof(gp)
         @test !AutoGPs._isequal(fitted_gp, gp)
+    end
+    @testset "Sparse variational 2d GP with Poisson likelihood" begin
+        kernel = 1. * SEKernel()
+        lgp = LatentGP(GP(0.0, kernel), PoissonLikelihood(), 1e-6)
+        sva = SVA(lgp(z).fx, variational_gaussian(length(z)))
+        svgp = SVGP(lgp, sva; fixed_inducing_points = true)
+        x = rand(100, 2) |> RowVecs
+        y = round.(Int, 10 .* sum.(abs2, x))
+        z = x[begin:5:end]
+        fitted_svgp = AutoGPs.fit(svgp, x, y; iterations = 1)
+        @test fitted_svgp isa typeof(svgp)
+        @test !AutoGPs._isequal(fitted_svgp, svgp)
+        @test fitted_svgp.sva.fz.x === z
     end
 end
 
