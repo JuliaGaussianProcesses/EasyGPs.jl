@@ -10,6 +10,8 @@ import Optimization, OptimizationOptimJL
 import ParameterHandling
 import Enzyme, Zygote
 
+using Distributions: MvNormal
+
 export variational_gaussian, with_gaussian_noise
 export SVA, SVGP
 

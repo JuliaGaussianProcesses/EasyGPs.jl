@@ -1,5 +1,5 @@
 using AutoGPs
-using Distributions
+import KernelFunctions
 import ParameterHandling
 using Test
 
@@ -7,8 +7,8 @@ using Test
 
 @testset "Unit tests for AutoGPs._isequal(::$(typeof(o1)), ::$(typeof(o2)))" for (o1, o2) in (
     SEKernel() => SEKernel(AutoGPs.KernelFunctions.SqEuclidean()),
-    Matern32Kernel() => Matern32Kernel(AutoGPs.KernelFunctions.SqEuclidean()),
-    Matern52Kernel() => Matern52Kernel(AutoGPs.KernelFunctions.SqEuclidean()),
+    Matern32Kernel() => Matern32Kernel(KernelFunctions.SqEuclidean()),
+    Matern52Kernel() => Matern52Kernel(KernelFunctions.SqEuclidean()),
 )
     @test AutoGPs._isequal(o1, o1)
     @test AutoGPs._isequal(o2, o2)
@@ -23,7 +23,8 @@ end
         2. * SEKernel(), 3. * SEKernel() + 2. * Matern32Kernel(),
         2. * Matern32Kernel() * SEKernel(),
         2. * with_lengthscale(SEKernel(), 1.) + 3. * Matern32Kernel() * Matern52Kernel(),
-        BernoulliLikelihood()
+        BernoulliLikelihood(),
+        PoissonLikelihood()
     )
         model, θ = AutoGPs.parameterize(object)
         new_object = @inferred model(θ)
