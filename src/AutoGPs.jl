@@ -206,7 +206,7 @@ struct SVGP{T <: LatentGP, Ts <: SVA}
     fixed_inducing_points::Bool
 end
 
-SVGP(lgp, sva; fixed_induxing_points) = SVGP(lgp, sva, fixed_induxing_points)
+SVGP(lgp, sva; fixed_inducing_points) = SVGP(lgp, sva, fixed_inducing_points)
 
 function extract_parameters(f::SVGP)
     return (
