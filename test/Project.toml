@@ -1,3 +1,4 @@
 [deps]
+KernelFunctions = "ec8451be-7e33-11e9-00cf-bbf324bd1392"
 ParameterHandling = "2412ca09-6db7-441c-8e3a-88d5709968c5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
