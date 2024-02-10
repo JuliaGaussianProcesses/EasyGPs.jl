@@ -1,4 +1,5 @@
 using EasyGPs
+import KernelFunctions
 import ParameterHandling
 using Test
 
@@ -22,7 +23,8 @@ end
         2. * SEKernel(), 3. * SEKernel() + 2. * Matern32Kernel(),
         2. * Matern32Kernel() * SEKernel(),
         2. * with_lengthscale(SEKernel(), 1.) + 3. * Matern32Kernel() * Matern52Kernel(),
-        BernoulliLikelihood()
+        BernoulliLikelihood(),
+        PoissonLikelihood()
     )
         model, θ = EasyGPs.parameterize(object)
         new_object = @inferred model(θ)
@@ -52,6 +54,19 @@ end
         fitted_gp = EasyGPs.fit(gp, x, y; iterations = 1)
         @test fitted_gp isa typeof(gp)
         @test !EasyGPs._isequal(fitted_gp, gp)
+    end
+    @testset "Sparse variational 2d GP with Poisson likelihood" begin
+        kernel = 1. * SEKernel()
+        lgp = LatentGP(GP(0.0, kernel), PoissonLikelihood(), 1e-6)
+        x = rand(100, 2) |> RowVecs
+        y = round.(Int, 10 .* sum.(abs2, x))
+        z = x[begin:5:end]
+        sva = SVA(lgp(z).fx, variational_gaussian(length(z)))
+        svgp = SVGP(lgp, sva; fixed_inducing_points = true)
+        fitted_svgp = EasyGPs.fit(svgp, x, y; iterations = 1)
+        @test fitted_svgp isa typeof(svgp)
+        @test !EasyGPs._isequal(fitted_svgp, svgp)
+        @test fitted_svgp.sva.fz.x === z
     end
 end
 

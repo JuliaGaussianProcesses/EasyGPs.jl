@@ -3,14 +3,17 @@ module EasyGPs
 using Reexport
 
 @reexport using AbstractGPs
-@reexport using ApproximateGPs
 @reexport using GPLikelihoods
 
 import Optimization, OptimizationOptimJL
 import ParameterHandling
 import Enzyme, Zygote
 
-export with_gaussian_noise
+using ApproximateGPs
+using Distributions: MvNormal
+using LinearAlgebra: I
+
+export variational_gaussian, with_gaussian_noise
 export SVA, SVGP
 
 """
@@ -157,6 +160,10 @@ extract_parameters(::BernoulliLikelihood) = nothing
 apply_parameters(l::BernoulliLikelihood, θ) = l
 _isequal(l1::T, l2::T) where T <: BernoulliLikelihood = true
 
+extract_parameters(::PoissonLikelihood) = nothing
+apply_parameters(l::PoissonLikelihood, θ) = l
+_isequal(l1::T, l2::T) where T <: PoissonLikelihood = true
+
 
 
 # GPs
@@ -166,7 +173,7 @@ costfunction(f::GP, data) = -logpdf(f(data.x, 1e-6), data.y)
 _isequal(f1::GP, f2::GP) = _isequal(f1.mean, f2.mean) && _isequal(f1.kernel, f2.kernel)
 
 extract_parameters(f::LatentGP) = (extract_parameters(f.f), extract_parameters(f.lik))
-apply_parameters(f::LatentGP, θ) = GP(apply_parameters(f.f, θ[1]), apply_parameters(f.lik, θ[2]), f.Σy)
+apply_parameters(f::LatentGP, θ) = LatentGP(apply_parameters(f.f, θ[1]), apply_parameters(f.lik, θ[2]), f.Σy)
 
 
 
@@ -174,7 +181,7 @@ apply_parameters(f::LatentGP, θ) = GP(apply_parameters(f.f, θ[1]), apply_param
 const SVA = SparseVariationalApproximation
 
 function extract_parameters(sva::SVA, fixed_inducing_points::Bool)
-    fz_par = fixed_inducing_points ? nothing : collect(fz.x)
+    fz_par = fixed_inducing_points ? nothing : collect(sva.fz.x)
     q_par = extract_parameters(sva.q)
     return (fz_par, q_par)
 end
@@ -184,6 +191,15 @@ function apply_parameters(sva::SVA, θ)
     q = apply_parameters(sva.q, θ[2])
     return SVA(fz, q)
 end
+
+variational_gaussian(n::Int, T = Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n, n))
+
+
+
+# Distributions
+EasyGPs.extract_parameters(d::MvNormal) = (d.μ, ParameterHandling.positive_definite(d.Σ))
+EasyGPs.apply_parameters(::MvNormal, θ) = MvNormal(θ[1], θ[2] + 1e-6*I(size(θ[2], 1)))
+_isequal(d1::MvNormal, d2::MvNormal) = isapprox(d1.μ, d1.μ) && isapprox(d1.Σ, d2.Σ)
 
 
 
@@ -216,11 +232,9 @@ function extract_parameters(f::SVGP)
 end
 
 function apply_parameters(f::SVGP, θ)
-    return SVGP(
-        apply_parameters(f.lgp, θ[1]),
-        apply_parameters(f.sva, θ[2]),
-        f.fixed_inducing_points
-    )
+    lgp = apply_parameters(f.lgp, θ[1])
+    sva = apply_parameters(f.sva, θ[2])
+    return SVGP(lgp, SVA(lgp(sva.fz.x).fx, sva.q), f.fixed_inducing_points)
 end
 
 costfunction(svgp::SVGP, data) = -elbo(svgp.sva, svgp.lgp(data.x), data.y)
