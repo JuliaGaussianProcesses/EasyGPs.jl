@@ -63,9 +63,9 @@ end
         z = x[begin:5:end]
         sva = SVA(lgp(z).fx, variational_gaussian(length(z)))
         svgp = SVGP(lgp, sva; fixed_inducing_points = true)
-        fitted_svgp = AutoGPs.fit(svgp, x, y; iterations = 1)
+        fitted_svgp = EasyGPs.fit(svgp, x, y; iterations = 1)
         @test fitted_svgp isa typeof(svgp)
-        @test !AutoGPs._isequal(fitted_svgp, svgp)
+        @test !EasyGPs._isequal(fitted_svgp, svgp)
         @test fitted_svgp.sva.fz.x === z
     end
 end
