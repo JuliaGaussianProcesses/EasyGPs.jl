@@ -28,7 +28,7 @@ makedocs(;
             "examples/0-mauna-loa/index.md",
         ],
     ),
-    modules=[AbstractGPs],
+    modules=[EasyGPs],
     pages=[
         "Home" => "index.md",
         "Examples" => JuliaGPsDocs.find_generated_examples(EasyGPs),
