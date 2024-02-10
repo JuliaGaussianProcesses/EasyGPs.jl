@@ -1,16 +1,11 @@
-# EasyGPs
-
-[![Docs: stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaGaussianProcesses.github.io/EasyGPs.jl/stable)
-[![Docs: dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaGaussianProcesses.github.io/EasyGPs.jl/dev)
-[![CI](https://github.com/JuliaGaussianProcesses/EasyGPs.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaGaussianProcesses/EasyGPs.jl/actions/workflows/CI.yml)
-[![Codecov](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl)
+# EasyGPs.jl
 
 EasyGPs.jl is a package that defines a high-level API for the JuliaGaussianProcesses eco-
 system. It is aimed at people who want to use GPs to do exploratory analysis, model data and
 make predictions without having to deal with all the low-level detail.
 
-> [!NOTE]  
-> This is currently an experimental package and may undergo rapid breaking changes.
+!!! note
+    This is currently an experimental package and may undergo rapid changes.
 
 ## Usage
 
