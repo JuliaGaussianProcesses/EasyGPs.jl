@@ -1,4 +1,4 @@
-module AutoGPs
+module EasyGPs
 
 using Reexport
 
@@ -18,7 +18,7 @@ export SVA, SVGP
 
 Fit `object` to `data`. Returns another instance of `typeof(object)` with optimized
 parameters. For possible keyword arguments see `optimize`. Supported object types:
-- `AutoGPs.NoisyGP`
+- `EasyGPs.NoisyGP`
 """
 function fit(object, data; kwargs...)
     model, θ0 = parameterize(object)
@@ -54,7 +54,7 @@ parameterize(object) = Parameterized(object), extract_parameters(object)
     optimize(model, θ0, data; kwargs...) -> θ_opt
 
 Takes a callable `model` and returns the optimal parameter, starting with initial parameters
-`θ0`. In order to work, there needs to be an implementation of `AutoGPs.costfunction` taking
+`θ0`. In order to work, there needs to be an implementation of `EasyGPs.costfunction` taking
 two arguments, the first of which is of type `typeof(model(θ0))`.
 """
 function optimize(model, θ0, data; iterations = 1000, kwargs...)
@@ -225,4 +225,4 @@ end
 
 costfunction(svgp::SVGP, data) = -elbo(svgp.sva, svgp.lgp(data.x), data.y)
 
-end # module AutoGPs
+end # module EasyGPs
