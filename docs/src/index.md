@@ -1,8 +1,8 @@
 # EasyGPs.jl
 
-EasyGPs.jl is a package that defines a high-level API for the JuliaGaussianProcesses eco-
-system. It is aimed at people who want to use GPs to do exploratory analysis, model data and
-make predictions without having to deal with all the low-level detail.
+EasyGPs.jl is a package that defines a high-level API for the JuliaGaussianProcesses
+ecosystem. It is aimed at people who want to use GPs to do exploratory analysis, model data
+and make predictions without having to deal with all the low-level detail.
 
 !!! note
     This is currently an experimental package and may undergo rapid changes.

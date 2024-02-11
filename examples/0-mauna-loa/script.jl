@@ -1,8 +1,8 @@
 # # Mauna Loa time series example
 #
 # In this notebook, we apply Gaussian process regression to the Mauna Loa CO₂
-# dataset. It is adapted from the corresponding AbstractGPs.jl tutorial:
-# https://juliagaussianprocesses.github.io/AbstractGPs.jl/stable/examples/1-mauna-loa/
+# dataset. It is adapted from [the corresponding AbstractGPs.jl tutorial](
+# https://juliagaussianprocesses.github.io/AbstractGPs.jl/stable/examples/1-mauna-loa/)
 # It is therefore instructive to read that first and then see how EasyGPs.jl
 # simplifies the steps.
 
@@ -15,13 +15,6 @@ using EasyGPs  # handles all things related to GPs
 using Plots  # visualisation
 
 # Let's load and visualize the dataset.
-
-# !!! tip
-#     The `let` block [creates a new
-#     scope](https://docs.julialang.org/en/v1/manual/variables-and-scoping/#scope-of-variables),
-#     so any utility variables we define in here won't leak outside. This is
-#     particularly helpful to keep notebooks tidy! The return value of the
-#     block is given by its last expression.
 
 (xtrain, ytrain), (xtest, ytest) = let
     data = CSV.read(joinpath(@__DIR__, "CO2_data.csv"), Tables.matrix; header=0)
