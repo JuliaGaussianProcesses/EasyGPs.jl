@@ -215,8 +215,8 @@ variational_gaussian(n::Int, T = Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n
 
 
 # Distributions
-EasyGPs.extract_parameters(d::MvNormal) = (d.μ, ParameterHandling.positive_definite(d.Σ))
-EasyGPs.apply_parameters(::MvNormal, θ) = MvNormal(θ[1], θ[2] + 1e-6*I(size(θ[2], 1)))
+extract_parameters(d::MvNormal) = (d.μ, ParameterHandling.positive_definite(d.Σ))
+apply_parameters(::MvNormal, θ) = MvNormal(θ[1], θ[2])
 _isequal(d1::MvNormal, d2::MvNormal) = isapprox(d1.μ, d1.μ) && isapprox(d1.Σ, d2.Σ)
 
 
