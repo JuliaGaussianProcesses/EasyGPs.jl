@@ -351,7 +351,7 @@ version = "0.6.8"
 
 [[deps.EasyGPs]]
 deps = ["AbstractGPs", "ApproximateGPs", "Distributions", "Enzyme", "GPLikelihoods", "KernelFunctions", "LinearAlgebra", "Optimization", "OptimizationOptimJL", "ParameterHandling", "Reexport", "TemporalGPs", "Zygote"]
-git-tree-sha1 = "9d0e7817d2ed70b804ec2fef03a3e31c4eb5a7fe"
+git-tree-sha1 = "b0d9fe31136b414e927e5f44ee79f11bf634a2d6"
 repo-rev = "master"
 repo-url = "/home/runner/work/EasyGPs.jl/EasyGPs.jl"
 uuid = "dcfb08e9-329b-4987-96a2-39b8bd2240d0"
