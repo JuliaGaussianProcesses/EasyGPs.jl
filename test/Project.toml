@@ -2,3 +2,5 @@
 KernelFunctions = "ec8451be-7e33-11e9-00cf-bbf324bd1392"
 ParameterHandling = "2412ca09-6db7-441c-8e3a-88d5709968c5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
