@@ -99,21 +99,13 @@ _isequal(m1::ConstMean, m2::ConstMean) = isapprox(m1.c, m2.c)
 
 
 # Simple kernels
-extract_parameters(::SEKernel) = nothing
-apply_parameters(k::SEKernel, θ) = k
-_isequal(k1::T, k2::T) where T <: SEKernel = true
+KernelsWithoutParameters = Union{
+    SEKernel, Matern32Kernel, Matern52Kernel, WhiteKernel
+}
 
-extract_parameters(::Matern32Kernel) = nothing
-apply_parameters(k::Matern32Kernel, θ) = k
-_isequal(k1::T, k2::T) where T <: Matern32Kernel = true
-
-extract_parameters(::Matern52Kernel) = nothing
-apply_parameters(k::Matern52Kernel, θ) = k
-_isequal(k1::T, k2::T) where T <: Matern52Kernel = true
-
-extract_parameters(::WhiteKernel) = nothing
-apply_parameters(k::WhiteKernel, θ) = k
-_isequal(k1::T, k2::T) where T <: WhiteKernel = true
+extract_parameters(::T) where T <: KernelsWithoutParameters = nothing
+apply_parameters(k::T, θ) where T <: KernelsWithoutParameters = k
+_isequal(k1::T, k2::T) where T <: KernelsWithoutParameters = true
 
 extract_parameters(k::PeriodicKernel) = ParameterHandling.positive(only(k.r))
 apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r = [θ])
