@@ -7,11 +7,11 @@
 [![Codecov](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl/tree/master)
 
 EasyGPs.jl is a package that defines a high-level API for the JuliaGaussianProcesses
-ecosystem. It is aimed at people who want to use GPs to do exploratory analysis, model data
-and make predictions without having to deal with all the low-level detail.
+ecosystem. It handles model parameterization and training, allowing users to focus on the
+data and results without being distracted by tedious and repetitive tasks.
 
 > [!NOTE]  
-> This is currently an experimental package and may undergo rapid breaking changes.
+> This is an experimental package and may undergo breaking changes.
 
 ## Usage
 

@@ -2,7 +2,7 @@
 #
 # In this notebook, we apply Gaussian process regression to the Mauna Loa CO₂
 # dataset. It is adapted from [the corresponding AbstractGPs.jl tutorial](
-# https://juliagaussianprocesses.github.io/AbstractGPs.jl/stable/examples/1-mauna-loa/)
+# https://juliagaussianprocesses.github.io/AbstractGPs.jl/stable/examples/1-mauna-loa/).
 # It is therefore instructive to read that first and then see how EasyGPs.jl
 # simplifies the steps.
 
