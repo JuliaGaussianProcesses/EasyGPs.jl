@@ -61,16 +61,14 @@ Takes a callable `model` and returns the optimal parameter, starting with initia
 `θ0`. In order to work, there needs to be an implementation of `EasyGPs.costfunction` taking
 two arguments, the first of which is of type `typeof(model(θ0))`.
 """
-function optimize(
-    model, θ0, data;
-    iterations=1000,
-    optimizer=Optim.BFGS(),
-    kwargs...
-)
+function optimize(model, θ0, data; iterations = 1000, optimizer = Optim.BFGS(), kwargs...)
     par0, unflatten = ParameterHandling.flatten(θ0)
-    optf = Optimization.OptimizationFunction((par, data) -> costfunction(model(unflatten(par)), data), Optimization.AutoZygote())
+    optf = Optimization.OptimizationFunction(
+        (par, data) -> costfunction(model(unflatten(par)), data),
+        Optimization.AutoZygote(),
+    )
     prob = Optimization.OptimizationProblem(optf, par0, data)
-    sol = Optimization.solve(prob, optimizer; maxiters=iterations)
+    sol = Optimization.solve(prob, optimizer; maxiters = iterations)
     return unflatten(sol.u)
 end
 
@@ -96,20 +94,19 @@ _isequal(m1::ConstMean, m2::ConstMean) = isapprox(m1.c, m2.c)
 
 
 # Simple kernels
-KernelsWithoutParameters = Union{
-    SEKernel,Matern32Kernel,Matern52Kernel,WhiteKernel
-}
+KernelsWithoutParameters = Union{SEKernel,Matern32Kernel,Matern52Kernel,WhiteKernel}
 
 extract_parameters(::T) where {T<:KernelsWithoutParameters} = nothing
 apply_parameters(k::T, θ) where {T<:KernelsWithoutParameters} = k
 _isequal(k1::T, k2::T) where {T<:KernelsWithoutParameters} = true
 
 extract_parameters(k::PeriodicKernel) = ParameterHandling.positive(only(k.r))
-apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r=[θ])
+apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r = [θ])
 _isequal(k1::T, k2::T) where {T<:PeriodicKernel} = k1.r ≈ k2.r
 
 extract_parameters(k::RationalQuadraticKernel) = ParameterHandling.positive(only(k.α))
-apply_parameters(k::RationalQuadraticKernel, θ) = RationalQuadraticKernel(; α=θ, metric=k.metric)
+apply_parameters(k::RationalQuadraticKernel, θ) =
+    RationalQuadraticKernel(; α = θ, metric = k.metric)
 _isequal(k1::T, k2::T) where {T<:RationalQuadraticKernel} = true
 
 
@@ -121,7 +118,8 @@ _isequal(k1::KernelSum, k2::KernelSum) = mapreduce(_isequal, &, k1.kernels, k2.k
 
 extract_parameters(k::KernelProduct) = map(extract_parameters, k.kernels)
 apply_parameters(k::KernelProduct, θ) = KernelProduct(map(apply_parameters, k.kernels, θ))
-_isequal(k1::KernelProduct, k2::KernelProduct) = mapreduce(_isequal, &, k1.kernels, k2.kernels)
+_isequal(k1::KernelProduct, k2::KernelProduct) =
+    mapreduce(_isequal, &, k1.kernels, k2.kernels)
 
 function extract_parameters(k::TransformedKernel)
     return (extract_parameters(k.kernel), extract_parameters(k.transform))
@@ -130,7 +128,7 @@ end
 function apply_parameters(k::TransformedKernel, θ)
     return TransformedKernel(
         apply_parameters(k.kernel, θ[1]),
-        apply_parameters(k.transform, θ[2])
+        apply_parameters(k.transform, θ[2]),
     )
 end
 
@@ -143,10 +141,7 @@ function extract_parameters(k::ScaledKernel)
 end
 
 function apply_parameters(k::ScaledKernel, θ)
-    return ScaledKernel(
-        apply_parameters(k.kernel, θ[1]),
-        θ[2]
-    )
+    return ScaledKernel(apply_parameters(k.kernel, θ[1]), θ[2])
 end
 
 function _isequal(k1::ScaledKernel, k2::ScaledKernel)
@@ -175,12 +170,14 @@ _isequal(l1::T, l2::T) where {T<:PoissonLikelihood} = true
 
 # GPs
 extract_parameters(f::GP) = (extract_parameters(f.mean), extract_parameters(f.kernel))
-apply_parameters(f::GP, θ) = GP(apply_parameters(f.mean, θ[1]), apply_parameters(f.kernel, θ[2]))
+apply_parameters(f::GP, θ) =
+    GP(apply_parameters(f.mean, θ[1]), apply_parameters(f.kernel, θ[2]))
 costfunction(f::GP, data) = -logpdf(f(data.x), data.y)
 _isequal(f1::GP, f2::GP) = _isequal(f1.mean, f2.mean) && _isequal(f1.kernel, f2.kernel)
 
 extract_parameters(f::LatentGP) = (extract_parameters(f.f), extract_parameters(f.lik))
-apply_parameters(f::LatentGP, θ) = LatentGP(apply_parameters(f.f, θ[1]), apply_parameters(f.lik, θ[2]), f.Σy)
+apply_parameters(f::LatentGP, θ) =
+    LatentGP(apply_parameters(f.f, θ[1]), apply_parameters(f.lik, θ[2]), f.Σy)
 
 
 
@@ -199,7 +196,7 @@ function apply_parameters(sva::SVA, θ)
     return SVA(fz, q)
 end
 
-variational_gaussian(n::Int, T=Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n, n))
+variational_gaussian(n::Int, T = Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n, n))
 
 
 
@@ -220,10 +217,12 @@ end
 
 with_gaussian_noise(gp::GP, obs_noise::Real) = NoisyGP(gp, obs_noise)
 
-extract_parameters(f::NoisyGP) = (extract_parameters(f.gp), ParameterHandling.positive(f.obs_noise, exp, 1e-6))
+extract_parameters(f::NoisyGP) =
+    (extract_parameters(f.gp), ParameterHandling.positive(f.obs_noise, exp, 1e-6))
 apply_parameters(f::NoisyGP, θ) = NoisyGP(apply_parameters(f.gp, θ[1]), θ[2])
 costfunction(f::NoisyGP, data) = -logpdf(f(data.x), data.y)
-_isequal(f1::NoisyGP, f2::NoisyGP) = _isequal(f1.gp, f2.gp) && isapprox(f1.obs_noise, f2.obs_noise)
+_isequal(f1::NoisyGP, f2::NoisyGP) =
+    _isequal(f1.gp, f2.gp) && isapprox(f1.obs_noise, f2.obs_noise)
 
 struct SVGP{T<:LatentGP,Ts<:SVA}
     lgp::T
@@ -234,10 +233,7 @@ end
 SVGP(lgp, sva; fixed_inducing_points) = SVGP(lgp, sva, fixed_inducing_points)
 
 function extract_parameters(f::SVGP)
-    return (
-        extract_parameters(f.lgp),
-        extract_parameters(f.sva, f.fixed_inducing_points),
-    )
+    return (extract_parameters(f.lgp), extract_parameters(f.sva, f.fixed_inducing_points))
 end
 
 function apply_parameters(f::SVGP, θ)

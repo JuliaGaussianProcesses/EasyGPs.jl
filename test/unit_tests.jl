@@ -13,14 +13,18 @@ end
 @testitem "parameterize" begin
     import ParameterHandling
     for object in (
-        ZeroMean(), ConstMean(1.0),
-        SEKernel(), Matern32Kernel(), Matern52Kernel(),
+        ZeroMean(),
+        ConstMean(1.0),
+        SEKernel(),
+        Matern32Kernel(),
+        Matern52Kernel(),
         with_lengthscale(SEKernel(), 2.0),
-        2.0 * SEKernel(), 3.0 * SEKernel() + 2.0 * Matern32Kernel(),
+        2.0 * SEKernel(),
+        3.0 * SEKernel() + 2.0 * Matern32Kernel(),
         2.0 * Matern32Kernel() * SEKernel(),
         2.0 * with_lengthscale(SEKernel(), 1.0) + 3.0 * Matern32Kernel() * Matern52Kernel(),
         BernoulliLikelihood(),
-        PoissonLikelihood()
+        PoissonLikelihood(),
     )
         model, θ = EasyGPs.parameterize(object)
         new_object = @inferred model(θ)
