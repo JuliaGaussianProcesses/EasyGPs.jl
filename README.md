@@ -5,6 +5,7 @@
 [![Docs: dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaGaussianProcesses.github.io/EasyGPs.jl/dev)
 [![CI](https://github.com/JuliaGaussianProcesses/EasyGPs.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaGaussianProcesses/EasyGPs.jl/actions/workflows/CI.yml)
 [![Codecov](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaGaussianProcesses/EasyGPs.jl/tree/master)
+[![Code Style: Blue](https://img.shields.io/badge/code%20style-blue-4495d1.svg)](https://github.com/JuliaDiff/BlueStyle)
 
 EasyGPs.jl is a package that defines a high-level API for the JuliaGaussianProcesses
 ecosystem. It handles model parameterization and training, allowing users to focus on the
