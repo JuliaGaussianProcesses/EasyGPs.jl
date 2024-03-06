@@ -17,7 +17,7 @@ using Plots  # visualisation
 # Let's load and visualize the dataset.
 
 (xtrain, ytrain), (xtest, ytest) = let
-    data = CSV.read(joinpath(@__DIR__, "CO2_data.csv"), Tables.matrix; header=0)
+    data = CSV.read(joinpath(@__DIR__, "CO2_data.csv"), Tables.matrix; header = 0)
     year = data[:, 1]
     co2 = data[:, 2]
 
@@ -29,9 +29,9 @@ using Plots  # visualisation
 end
 
 function plotdata()
-    plot(; xlabel="year", ylabel="CO₂ [ppm]", legend=:bottomright)
-    scatter!(xtrain, ytrain; label="training data", ms=2, markerstrokewidth=0)
-    return scatter!(xtest, ytest; label="test data", ms=2, markerstrokewidth=0)
+    plot(; xlabel = "year", ylabel = "CO₂ [ppm]", legend = :bottomright)
+    scatter!(xtrain, ytrain; label = "training data", ms = 2, markerstrokewidth = 0)
+    return scatter!(xtest, ytest; label = "test data", ms = 2, markerstrokewidth = 0)
 end
 
 plotdata()
@@ -42,10 +42,12 @@ plotdata()
 # original tutorial. 
 
 k_smooth_trend = exp(8.0) * with_lengthscale(SEKernel(), exp(4.0))#with_lengthscale(SEKernel(), exp(4.0))
-k_seasonality = exp(2.0) * PeriodicKernel(; r=[0.5]) *
-    with_lengthscale(SEKernel(), exp(4.0))
-k_medium_term_irregularities = 1.0 * with_lengthscale(RationalQuadraticKernel(; α=exp(-1.0)), 1.0)
-k_noise_terms = exp(-4.0) * with_lengthscale(SEKernel(), exp(-2.0)) + exp(-4.0) * WhiteKernel()
+k_seasonality =
+    exp(2.0) * PeriodicKernel(; r = [0.5]) * with_lengthscale(SEKernel(), exp(4.0))
+k_medium_term_irregularities =
+    1.0 * with_lengthscale(RationalQuadraticKernel(; α = exp(-1.0)), 1.0)
+k_noise_terms =
+    exp(-4.0) * with_lengthscale(SEKernel(), exp(-2.0)) + exp(-4.0) * WhiteKernel()
 kernel = k_smooth_trend + k_seasonality + k_medium_term_irregularities + k_noise_terms
 #md nothing #hide
 
@@ -69,11 +71,11 @@ fpost_init = posterior(gp(xtrain), ytrain)
 # By setting `ribbon_scale=2` we visualize the uncertainty band with ``\pm 2``
 # (instead of the default ``\pm 1``) standard deviations.
 
-plot_gp!(f; label) = plot!(f(1920:0.2:2030); ribbon_scale=2, linewidth=1, label)
+plot_gp!(f; label) = plot!(f(1920:0.2:2030); ribbon_scale = 2, linewidth = 1, label)
 #md nothing #hide
 
 plotdata()
-plot_gp!(fpost_init; label="posterior f(⋅)")
+plot_gp!(fpost_init; label = "posterior f(⋅)")
 
 # A reasonable fit to the data, but poor extrapolation away from the observations!
 
@@ -84,11 +86,13 @@ plot_gp!(fpost_init; label="posterior f(⋅)")
 # We pass an option to choose the exact same optimizer as in the original tutorial.
 
 @time fitted_gp = EasyGPs.fit(
-    gp, xtrain, ytrain;
+    gp,
+    xtrain,
+    ytrain;
     optimizer = Optim.LBFGS(;
-        alphaguess=Optim.LineSearches.InitialStatic(; scaled=true),
-        linesearch=Optim.LineSearches.BackTracking(),
-    )
+        alphaguess = Optim.LineSearches.InitialStatic(; scaled = true),
+        linesearch = Optim.LineSearches.BackTracking(),
+    ),
 )
 #md nothing #hide
 
@@ -104,4 +108,4 @@ fpost_opt.prior.kernel
 # And, finally, we can visualize our optimized posterior GP:
 
 plotdata()
-plot_gp!(fpost_opt; label="optimized posterior f(⋅)")
+plot_gp!(fpost_opt; label = "optimized posterior f(⋅)")
