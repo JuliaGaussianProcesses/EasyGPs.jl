@@ -68,10 +68,7 @@ function optimize(
     kwargs...
 )
     par0, unflatten = ParameterHandling.flatten(θ0)
-    optf = Optimization.OptimizationFunction(
-        (par, data) -> costfunction(model(unflatten(par)), data),
-        Optimization.AutoZygote()
-    )
+    optf = Optimization.OptimizationFunction((par, data) -> costfunction(model(unflatten(par)), data), Optimization.AutoZygote())
     prob = Optimization.OptimizationProblem(optf, par0, data)
     sol = Optimization.solve(prob, optimizer; maxiters=iterations)
     return unflatten(sol.u)
