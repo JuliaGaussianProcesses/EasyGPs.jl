@@ -63,8 +63,8 @@ two arguments, the first of which is of type `typeof(model(θ0))`.
 """
 function optimize(
     model, θ0, data;
-    iterations = 1000,
-    optimizer = Optim.BFGS(),
+    iterations=1000,
+    optimizer=Optim.BFGS(),
     kwargs...
 )
     par0, unflatten = ParameterHandling.flatten(θ0)
@@ -73,7 +73,7 @@ function optimize(
         Optimization.AutoZygote()
     )
     prob = Optimization.OptimizationProblem(optf, par0, data)
-    sol = Optimization.solve(prob, optimizer; maxiters = iterations)
+    sol = Optimization.solve(prob, optimizer; maxiters=iterations)
     return unflatten(sol.u)
 end
 
@@ -83,7 +83,7 @@ end
 Check whether two things are equal for the purposes of this library. For this to be true,
 roughly speaking the objects must be of the same type and have the same parameters.
 """
-_isequal(::T1, ::T2) where {T1, T2} = false
+_isequal(::T1, ::T2) where {T1,T2} = false
 
 
 
@@ -100,20 +100,20 @@ _isequal(m1::ConstMean, m2::ConstMean) = isapprox(m1.c, m2.c)
 
 # Simple kernels
 KernelsWithoutParameters = Union{
-    SEKernel, Matern32Kernel, Matern52Kernel, WhiteKernel
+    SEKernel,Matern32Kernel,Matern52Kernel,WhiteKernel
 }
 
-extract_parameters(::T) where T <: KernelsWithoutParameters = nothing
-apply_parameters(k::T, θ) where T <: KernelsWithoutParameters = k
-_isequal(k1::T, k2::T) where T <: KernelsWithoutParameters = true
+extract_parameters(::T) where {T<:KernelsWithoutParameters} = nothing
+apply_parameters(k::T, θ) where {T<:KernelsWithoutParameters} = k
+_isequal(k1::T, k2::T) where {T<:KernelsWithoutParameters} = true
 
 extract_parameters(k::PeriodicKernel) = ParameterHandling.positive(only(k.r))
-apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r = [θ])
-_isequal(k1::T, k2::T) where T <: PeriodicKernel = k1.r ≈ k2.r
+apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r=[θ])
+_isequal(k1::T, k2::T) where {T<:PeriodicKernel} = k1.r ≈ k2.r
 
 extract_parameters(k::RationalQuadraticKernel) = ParameterHandling.positive(only(k.α))
-apply_parameters(k::RationalQuadraticKernel, θ) = RationalQuadraticKernel(; α = θ, metric = k.metric)
-_isequal(k1::T, k2::T) where T <: RationalQuadraticKernel = true
+apply_parameters(k::RationalQuadraticKernel, θ) = RationalQuadraticKernel(; α=θ, metric=k.metric)
+_isequal(k1::T, k2::T) where {T<:RationalQuadraticKernel} = true
 
 
 
@@ -168,11 +168,11 @@ _isequal(t1::ScaleTransform, t2::ScaleTransform) = isapprox(t1.s, t2.s)
 # Likelihoods
 extract_parameters(::BernoulliLikelihood) = nothing
 apply_parameters(l::BernoulliLikelihood, θ) = l
-_isequal(l1::T, l2::T) where T <: BernoulliLikelihood = true
+_isequal(l1::T, l2::T) where {T<:BernoulliLikelihood} = true
 
 extract_parameters(::PoissonLikelihood) = nothing
 apply_parameters(l::PoissonLikelihood, θ) = l
-_isequal(l1::T, l2::T) where T <: PoissonLikelihood = true
+_isequal(l1::T, l2::T) where {T<:PoissonLikelihood} = true
 
 
 
@@ -202,7 +202,7 @@ function apply_parameters(sva::SVA, θ)
     return SVA(fz, q)
 end
 
-variational_gaussian(n::Int, T = Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n, n))
+variational_gaussian(n::Int, T=Float64) = MvNormal(zeros(T, n), Matrix{T}(I, n, n))
 
 
 
@@ -214,7 +214,7 @@ _isequal(d1::MvNormal, d2::MvNormal) = isapprox(d1.μ, d1.μ) && isapprox(d1.Σ,
 
 
 # Custom wrappers
-struct NoisyGP{T <: GP, Tn <: Real}
+struct NoisyGP{T<:GP,Tn<:Real}
     gp::T
     obs_noise::Tn
 end
@@ -228,7 +228,7 @@ apply_parameters(f::NoisyGP, θ) = NoisyGP(apply_parameters(f.gp, θ[1]), θ[2])
 costfunction(f::NoisyGP, data) = -logpdf(f(data.x), data.y)
 _isequal(f1::NoisyGP, f2::NoisyGP) = _isequal(f1.gp, f2.gp) && isapprox(f1.obs_noise, f2.obs_noise)
 
-struct SVGP{T <: LatentGP, Ts <: SVA}
+struct SVGP{T<:LatentGP,Ts<:SVA}
     lgp::T
     sva::Ts
     fixed_inducing_points::Bool

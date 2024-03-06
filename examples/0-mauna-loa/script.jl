@@ -43,7 +43,7 @@ plotdata()
 
 k_smooth_trend = exp(8.0) * with_lengthscale(SEKernel(), exp(4.0))#with_lengthscale(SEKernel(), exp(4.0))
 k_seasonality = exp(2.0) * PeriodicKernel(; r=[0.5]) *
-    with_lengthscale(SEKernel(), exp(4.0))
+                with_lengthscale(SEKernel(), exp(4.0))
 k_medium_term_irregularities = 1.0 * with_lengthscale(RationalQuadraticKernel(; α=exp(-1.0)), 1.0)
 k_noise_terms = exp(-4.0) * with_lengthscale(SEKernel(), exp(-2.0)) + exp(-4.0) * WhiteKernel()
 kernel = k_smooth_trend + k_seasonality + k_medium_term_irregularities + k_noise_terms
@@ -85,7 +85,7 @@ plot_gp!(fpost_init; label="posterior f(⋅)")
 
 @time fitted_gp = EasyGPs.fit(
     gp, xtrain, ytrain;
-    optimizer = Optim.LBFGS(;
+    optimizer=Optim.LBFGS(;
         alphaguess=Optim.LineSearches.InitialStatic(; scaled=true),
         linesearch=Optim.LineSearches.BackTracking(),
     )
