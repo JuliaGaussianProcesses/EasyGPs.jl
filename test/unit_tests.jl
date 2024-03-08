@@ -11,7 +11,7 @@
 end
 
 @testitem "parameterize" begin
-    import ParameterHandling
+    using ParameterHandling: ParameterHandling
     for object in (
         ZeroMean(),
         ConstMean(1.0),
