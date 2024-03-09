@@ -65,12 +65,7 @@ Takes a callable `model` and returns the optimal parameter, starting with initia
 `θ0`. In order to work, there needs to be an implementation of `EasyGPs.costfunction` taking
 two arguments, the first of which is of type `typeof(model(θ0))`.
 """
-function optimize(
-    model, θ0, data;
-    iterations = 1000,
-    optimizer = Optim.BFGS(),
-    kwargs...
-)
+function optimize(model, θ0, data; iterations=1000, optimizer=Optim.BFGS(), kwargs...)
     par0, unflatten = flatten(θ0)
     optf = Optimization.OptimizationFunction(
         (par, data) -> costfunction(model(unflatten(par)), data), Optimization.AutoZygote()
@@ -105,14 +100,14 @@ apply_parameters(k::T, θ) where {T<:KernelsWithoutParameters} = k
 _isequal(k1::T, k2::T) where {T<:KernelsWithoutParameters} = true
 
 extract_parameters(k::PeriodicKernel) = positive(only(k.r))
-apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r = [θ])
-_isequal(k1::T, k2::T) where T <: PeriodicKernel = k1.r ≈ k2.r
+apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(; r=[θ])
+_isequal(k1::T, k2::T) where {T<:PeriodicKernel} = k1.r ≈ k2.r
 
 extract_parameters(k::RationalQuadraticKernel) = positive(only(k.α))
-apply_parameters(k::RationalQuadraticKernel, θ) = RationalQuadraticKernel(; α = θ, metric = k.metric)
-_isequal(k1::T, k2::T) where T <: RationalQuadraticKernel = true
-
-
+function apply_parameters(k::RationalQuadraticKernel, θ)
+    return RationalQuadraticKernel(; α=θ, metric=k.metric)
+end
+_isequal(k1::T, k2::T) where {T<:RationalQuadraticKernel} = true
 
 # Composite kernels
 extract_parameters(k::KernelSum) = map(extract_parameters, k.kernels)
