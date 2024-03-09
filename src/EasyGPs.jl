@@ -18,6 +18,9 @@ using LinearAlgebra: I
 export variational_gaussian, with_gaussian_noise
 export SVA, SVGP
 
+include("constraints.jl")
+export fixed, positive
+
 """
     fit(object, data; kwargs...)
 
@@ -43,7 +46,7 @@ struct Parameterized{T}
 end
 
 function (p::Parameterized)(θ)
-    return apply_parameters(p.object, ParameterHandling.value(θ))
+    return apply_parameters(p.object, value(θ))
 end
 
 """
@@ -62,8 +65,13 @@ Takes a callable `model` and returns the optimal parameter, starting with initia
 `θ0`. In order to work, there needs to be an implementation of `EasyGPs.costfunction` taking
 two arguments, the first of which is of type `typeof(model(θ0))`.
 """
-function optimize(model, θ0, data; iterations=1000, optimizer=Optim.BFGS(), kwargs...)
-    par0, unflatten = ParameterHandling.flatten(θ0)
+function optimize(
+    model, θ0, data;
+    iterations = 1000,
+    optimizer = Optim.BFGS(),
+    kwargs...
+)
+    par0, unflatten = flatten(θ0)
     optf = Optimization.OptimizationFunction(
         (par, data) -> costfunction(model(unflatten(par)), data), Optimization.AutoZygote()
     )
@@ -96,15 +104,15 @@ extract_parameters(::T) where {T<:KernelsWithoutParameters} = nothing
 apply_parameters(k::T, θ) where {T<:KernelsWithoutParameters} = k
 _isequal(k1::T, k2::T) where {T<:KernelsWithoutParameters} = true
 
-extract_parameters(k::PeriodicKernel) = ParameterHandling.positive(only(k.r))
-apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(; r=[θ])
-_isequal(k1::T, k2::T) where {T<:PeriodicKernel} = k1.r ≈ k2.r
+extract_parameters(k::PeriodicKernel) = positive(only(k.r))
+apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(r = [θ])
+_isequal(k1::T, k2::T) where T <: PeriodicKernel = k1.r ≈ k2.r
 
-extract_parameters(k::RationalQuadraticKernel) = ParameterHandling.positive(only(k.α))
-function apply_parameters(k::RationalQuadraticKernel, θ)
-    return RationalQuadraticKernel(; α=θ, metric=k.metric)
-end
-_isequal(k1::T, k2::T) where {T<:RationalQuadraticKernel} = true
+extract_parameters(k::RationalQuadraticKernel) = positive(only(k.α))
+apply_parameters(k::RationalQuadraticKernel, θ) = RationalQuadraticKernel(; α = θ, metric = k.metric)
+_isequal(k1::T, k2::T) where T <: RationalQuadraticKernel = true
+
+
 
 # Composite kernels
 extract_parameters(k::KernelSum) = map(extract_parameters, k.kernels)
@@ -132,7 +140,7 @@ function _isequal(k1::TransformedKernel, k2::TransformedKernel)
 end
 
 function extract_parameters(k::ScaledKernel)
-    return (extract_parameters(k.kernel), ParameterHandling.positive(only(k.σ²)))
+    return (extract_parameters(k.kernel), positive(only(k.σ²)))
 end
 
 function apply_parameters(k::ScaledKernel, θ)
@@ -144,7 +152,7 @@ function _isequal(k1::ScaledKernel, k2::ScaledKernel)
 end
 
 # Transforms
-extract_parameters(t::ScaleTransform) = ParameterHandling.positive(only(t.s))
+extract_parameters(t::ScaleTransform) = positive(only(t.s))
 apply_parameters(::ScaleTransform, θ) = ScaleTransform(θ)
 _isequal(t1::ScaleTransform, t2::ScaleTransform) = isapprox(t1.s, t2.s)
 
@@ -202,9 +210,7 @@ end
 
 with_gaussian_noise(gp::GP, obs_noise::Real) = NoisyGP(gp, obs_noise)
 
-function extract_parameters(f::NoisyGP)
-    return (extract_parameters(f.gp), ParameterHandling.positive(f.obs_noise, exp, 1e-6))
-end
+extract_parameters(f::NoisyGP) = (extract_parameters(f.gp), positive(f.obs_noise))
 apply_parameters(f::NoisyGP, θ) = NoisyGP(apply_parameters(f.gp, θ[1]), θ[2])
 costfunction(f::NoisyGP, data) = -logpdf(f(data.x), data.y)
 function _isequal(f1::NoisyGP, f2::NoisyGP)

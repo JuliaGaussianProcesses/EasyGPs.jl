@@ -19,6 +19,30 @@ end
     @test !EasyGPs._isequal(fitted_gp, gp)
 end
 
+@testitem "GP with Gaussian noise and custom constraints" begin
+    kernel = 1.0 * with_lengthscale(SEKernel(), fixed(2.))
+    gp = with_gaussian_noise(GP(3., kernel), fixed(0.1))
+    x = 0.01:0.01:1.
+    y = rand(gp.gp(x, 0.1))
+    fitted_gp = EasyGPs.fit(gp, x, y; iterations = 1)
+    @test fitted_gp isa typeof(gp)
+    @test !EasyGPs._isequal(fitted_gp, gp)
+
+    _, θ1 = EasyGPs.parameterize(gp)
+    _, θ2 = EasyGPs.parameterize(fitted_gp)
+
+    θ1 = EasyGPs.value(θ1)
+    θ2 = EasyGPs.value(θ2)
+    
+    # Check that parameters we asked to remain fixed are fixed, and the
+    @test θ1[1][2][1][2] ≈ θ2[1][2][1][2]
+    @test θ1[2] ≈ θ2[2]
+
+    # Check that the other parameters have changed
+    @test θ1[1][1] != θ2[1][1]
+    @test θ1[1][2][2] != θ2[1][2][2]
+end
+
 @testitem "Sparse variational 2d GP with Poisson likelihood" begin
     kernel = 1.0 * SEKernel()
     lgp = LatentGP(GP(0.0, kernel), PoissonLikelihood(), 1e-6)
