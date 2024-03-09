@@ -22,9 +22,9 @@ weakdeps = ["ChainRulesCore", "Test"]
 
 [[deps.AbstractGPs]]
 deps = ["ChainRulesCore", "Distributions", "FillArrays", "IrrationalConstants", "KernelFunctions", "LinearAlgebra", "PDMats", "Random", "RecipesBase", "Reexport", "Statistics", "StatsBase", "Test"]
-git-tree-sha1 = "6e5e13c57dbfdedddbc3ef727586d8ee0703d50a"
+git-tree-sha1 = "88d7ea1e3b58d999c7460ef70b0221a1f2f8828c"
 uuid = "99985d1d-32ba-4be9-9821-2ec096f28918"
-version = "0.5.19"
+version = "0.5.20"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "2d9c9a55f9c93e8887ad391fbae72f8ef55e1177"
@@ -353,7 +353,7 @@ version = "0.6.8"
 
 [[deps.EasyGPs]]
 deps = ["AbstractGPs", "ApproximateGPs", "Distributions", "Enzyme", "GPLikelihoods", "KernelFunctions", "LinearAlgebra", "Optimization", "OptimizationOptimJL", "ParameterHandling", "Reexport", "TemporalGPs", "Zygote"]
-git-tree-sha1 = "afc9625d740e56a259f019ea22e483d4686bab26"
+git-tree-sha1 = "3b55afa4d96f2c649918bb152019fdd52a3a5303"
 repo-rev = "master"
 repo-url = "/home/runner/work/EasyGPs.jl/EasyGPs.jl"
 uuid = "dcfb08e9-329b-4987-96a2-39b8bd2240d0"
@@ -1129,9 +1129,9 @@ version = "0.2.4"
 
 [[deps.PrecompileTools]]
 deps = ["Preferences"]
-git-tree-sha1 = "03b4c25b43cb84cee5c90aa9b5ea0a78fd848d2f"
+git-tree-sha1 = "5aa36f7049a63a1528fe8f7c3f2113413ffd4e1f"
 uuid = "aea7be01-6a6a-4083-8856-8a6e6704d82a"
-version = "1.2.0"
+version = "1.2.1"
 
 [[deps.Preferences]]
 deps = ["TOML"]
@@ -1444,9 +1444,9 @@ uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
 version = "7.2.1+1"
 
 [[deps.SymbolicIndexingInterface]]
-git-tree-sha1 = "7303000b4a1d5348c8c26fc4c856f5f4982885b1"
+git-tree-sha1 = "306960ba551858403f60267fabd76da7e79093d7"
 uuid = "2efcf032-c050-4f8e-a9bb-153293bab1f5"
-version = "0.3.9"
+version = "0.3.10"
 
 [[deps.TOML]]
 deps = ["Dates"]
