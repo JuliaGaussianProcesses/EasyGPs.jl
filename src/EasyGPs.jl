@@ -39,11 +39,11 @@ A shorthand for `fit(object, (; x, y); kwargs...)` for when the only data is `x`
 fit(gp, x, y; kwargs...) = fit(gp, (; x, y); kwargs...)
 
 struct Parameterized{T}
-    thing::T
+    object::T
 end
 
 function (p::Parameterized)(θ)
-    return apply_parameters(p.thing, ParameterHandling.value(θ))
+    return apply_parameters(p.object, ParameterHandling.value(θ))
 end
 
 """
