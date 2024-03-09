@@ -68,7 +68,11 @@ two arguments, the first of which is of type `typeof(model(θ0))`.
 function optimize(model, θ0, data; iterations=1000, optimizer=Optim.BFGS(), kwargs...)
     par0, unflatten = flatten(θ0)
     optf = Optimization.OptimizationFunction(
-        (par, data) -> costfunction(model(unflatten(par)), data), Optimization.AutoZygote()
+        (par, data) -> costfunction(
+            apply_parameters(model.object, _value(unflatten(par))),
+            data
+        ),
+        Optimization.AutoZygote()
     )
     prob = Optimization.OptimizationProblem(optf, par0, data)
     sol = Optimization.solve(prob, optimizer; maxiters=iterations)
@@ -99,11 +103,11 @@ extract_parameters(::T) where {T<:KernelsWithoutParameters} = nothing
 apply_parameters(k::T, θ) where {T<:KernelsWithoutParameters} = k
 _isequal(k1::T, k2::T) where {T<:KernelsWithoutParameters} = true
 
-extract_parameters(k::PeriodicKernel) = positive(only(k.r))
+extract_parameters(k::PeriodicKernel) = ParameterHandling.positive(only(k.r))
 apply_parameters(::PeriodicKernel, θ) = PeriodicKernel(; r=[θ])
 _isequal(k1::T, k2::T) where {T<:PeriodicKernel} = k1.r ≈ k2.r
 
-extract_parameters(k::RationalQuadraticKernel) = positive(only(k.α))
+extract_parameters(k::RationalQuadraticKernel) = ParameterHandling.positive(only(k.α))
 function apply_parameters(k::RationalQuadraticKernel, θ)
     return RationalQuadraticKernel(; α=θ, metric=k.metric)
 end
@@ -135,7 +139,7 @@ function _isequal(k1::TransformedKernel, k2::TransformedKernel)
 end
 
 function extract_parameters(k::ScaledKernel)
-    return (extract_parameters(k.kernel), positive(only(k.σ²)))
+    return (extract_parameters(k.kernel), ParameterHandling.positive(only(k.σ²)))
 end
 
 function apply_parameters(k::ScaledKernel, θ)
@@ -147,9 +151,9 @@ function _isequal(k1::ScaledKernel, k2::ScaledKernel)
 end
 
 # Transforms
-extract_parameters(t::ScaleTransform) = positive(only(t.s))
+extract_parameters(t::ScaleTransform) = ParameterHandling.positive(only(t.s))
 apply_parameters(::ScaleTransform, θ) = ScaleTransform(θ)
-_isequal(t1::ScaleTransform, t2::ScaleTransform) = isapprox(t1.s, t2.s)
+_isequal(t1::ScaleTransform, t2::ScaleTransform) = _isequal(only(t1.s), only(t2.s))
 
 # Likelihoods
 extract_parameters(::BernoulliLikelihood) = nothing
@@ -205,11 +209,11 @@ end
 
 with_gaussian_noise(gp::GP, obs_noise::Real) = NoisyGP(gp, obs_noise)
 
-extract_parameters(f::NoisyGP) = (extract_parameters(f.gp), positive(f.obs_noise))
+extract_parameters(f::NoisyGP) = (extract_parameters(f.gp), ParameterHandling.positive(f.obs_noise))
 apply_parameters(f::NoisyGP, θ) = NoisyGP(apply_parameters(f.gp, θ[1]), θ[2])
 costfunction(f::NoisyGP, data) = -logpdf(f(data.x), data.y)
 function _isequal(f1::NoisyGP, f2::NoisyGP)
-    return _isequal(f1.gp, f2.gp) && isapprox(f1.obs_noise, f2.obs_noise)
+    return _isequal(f1.gp, f2.gp) && _isequal(f1.obs_noise, f2.obs_noise)
 end
 
 struct SVGP{T<:LatentGP,Ts<:SVA}

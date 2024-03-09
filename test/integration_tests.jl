@@ -31,8 +31,8 @@ end
     _, θ1 = EasyGPs.parameterize(gp)
     _, θ2 = EasyGPs.parameterize(fitted_gp)
 
-    θ1 = EasyGPs.value(θ1)
-    θ2 = EasyGPs.value(θ2)
+    θ1 = EasyGPs._value(θ1)
+    θ2 = EasyGPs._value(θ2)
     
     # Check that parameters we asked to remain fixed are fixed, and the
     @test θ1[1][2][1][2] ≈ θ2[1][2][1][2]
